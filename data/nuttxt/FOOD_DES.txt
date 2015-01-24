@@ -8066,7 +8066,7 @@
 ~31025~^~1100~^~Sweet Potato puffs, frozen, unprepared~^~SWEET POTATO PUFFS,FRZ,UNPREP~^~~^~~^~~^~~^0^~~^6.25^^^
 ~31026~^~1100~^~Potatoes, yellow fleshed, roasted, salt added in processing, frozen, unprepared~^~POTATOES,YEL FLESHED,RSTD,SALT ADDED IN PROC,FRZ,UNPREP~^~~^~~^~~^~~^0^~~^^^^
 ~31027~^~1100~^~Potatoes, yellow fleshed, french fried, frozen, unprepared~^~POTATOES,YEL FLESHED,FRENCH FR,FRZ,UNPREP~^~~^~~^~~^~~^0^~~^^^^
-~31028~^~1100~^~Potatoes, yellow fleshed, hash brown, shredded, salt added in processing, frozen, unprepared~^~POTATO\,YEL FLSH,HASH BRN,SHRD,SALT ADDED IN PROC,FRZ,UNPREP~^~~^~~^~~^~~^0^~~^6.25^^^
+~31028~^~1100~^~Potatoes, yellow fleshed, hash brown, shredded, salt added in processing, frozen, unprepared~^~POTATO,YEL FLSH,HASH BRN,SHRD,SALT ADDED IN PROC,FRZ,UNPREP~^~~^~~^~~^~~^0^~~^6.25^^^
 ~31029~^~1100~^~Potatoes, french fried, wedge cut, frozen, unprepared~^~POTATOES,FRENCH FR,WEDGE CUT,FRZ,UNPREP~^~~^~~^~~^~~^0^~~^^^^
 ~31030~^~1100~^~Potatoes, french fried, steak cut, salt not added in processing, frozen, unprepared~^~POTATOES,FRENCH FR,STK CUT,SALT NOT ADDED IN PROC,FRZ,UNPREP~^~~^~~^~~^~~^0^~~^6.25^^^
 ~31031~^~1100~^~Potatoes, french fried, cross cut, frozen, unprepared~^~POTATOES,FRENCH FR,CROSS CUT,FRZ,UNPREP~^~~^~~^~~^~~^0^~~^6.25^^^
