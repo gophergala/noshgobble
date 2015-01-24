@@ -50,6 +50,56 @@ func fieldToFloat32(s string) float32 {
 	return float32(f64)
 }
 
+type NutrientQty struct {
+	// // 5-digit Nutrient Databank number.
+	// FoodId int32 // %5d
+	// Unique 3-digit identifier code for a nutrient.
+	NutrientId int32 // %3d
+	// Amount in 100 grams, edible portion.
+	Quantity float32 // %10.3f
+	// // Number of data points (previously called Sample_Ct) is the number of
+	// // analyses used to calculate the nutrient value. If the number of data
+	// // points is 0, the value was calculated or imputed.
+	// NumDataPoints int32 // %5d
+	// // Standard error of the mean. Null if cannot be calculated. The standard
+	// // error is also not given if the number of data points is less than three.
+	// StdError float32 // %8.3f Nil
+	// // Code indicating type of data.
+	// SrcCode string // %2s
+	// // Data Derivation Code giving specific information on how the value is
+	// // determined. This field is populated only for items added or updated
+	// // starting with SR14.
+	// DerivationCode string // %4s Nil
+	// // NDB number of the item used to calculate a missing value. Populated only
+	// // for items added or updated starting with SR14.
+	// RefFoodId int32 // %5d Nil
+	// // Indicates a vitamin or mineral added for fortification or enrichment.
+	// // This field is populated for ready-toeat breakfast cereals and many
+	// // brand-name hot cereals in food group 8.
+	// AdditionalNutrients bool // %b Nil
+	// // Number of studies.
+	// NumStudies int32 // %2d Nil
+	// // Minimum value.
+	// MinQuantity float32 // %10.3f Nil
+	// // Maximum value.
+	// MaxQuantity float32 // %10.3f Nil
+	// // Degrees of freedom.
+	// DF int32 // %4d Nil
+	// // Lower 95% error bound.
+	// LowerErrorBound float32 // %10.3f Nil
+	// // Upper 95% error bound.
+	// UpperErrorBound float32 // %10.3f Nil
+	// // Statistical comments. See definitions below.
+	// StatisticalComments string // %10s
+	// // Indicates when a value was either added to the database or last modified.
+	// LastModified Time
+	// // Confidence Code indicating data quality, based on evaluation of sample
+	// // plan, sample handling, analytical method, analytical quality control, and
+	// // number of samples analyzed. Not included in this release, but is planned
+	// // for future releases.
+	// ConfidenceCode string // A 1 Y
+}
+
 type Food struct {
 	// 5-digit Nutrient Databank number that uniquely identifies a food item. If
 	// this field is defined as numeric, the leading zero will be lost.
@@ -102,6 +152,9 @@ type Food struct {
 
 	// Factor for calculating calories from carbohydrates
 	CarbohydrateFactor float32 // %4.2f Nil
+
+	// Array of nutrients contained in this food
+	NutrientQtys []NutrientQty
 }
 
 func unwrapFood(record []string, fd *Food) (err error) {
@@ -189,17 +242,62 @@ func loadFile(filename string, db interface{}, loadRecord func(record []string, 
 	defer datafile.Close()
 
 	reader := csv.NewReader(datafile)
-	rawCSVdata, err := reader.ReadAll()
+	rawCSV, err := reader.ReadAll()
 	if err != nil {
 		log.Fatalf("Error reading data file", err)
 	}
 
-	for _, r := range rawCSVdata {
+	for _, r := range rawCSV {
 		loadRecord(r, db)
 	}
+}
+
+func loadNutrientData() {
+	datafile, err := os.Open("data/nutcsv/NUT_DATA.csv")
+	if err != nil {
+		log.Fatalf("Error opening data file \"NUT_DATA.csv\": %v", err)
+	}
+	defer datafile.Close()
+
+	reader := csv.NewReader(datafile)
+	rawCSV, err := reader.ReadAll()
+	if err != nil {
+		log.Fatalf("Error reading data file", err)
+	}
+
+	var currentFoodId = int32(-1)
+	var nc = 0
+	var nutrientQtys [1000]NutrientQty
+
+	copyNutrients := func() {
+		if currentFoodId < 0 {
+			return // no need to copy just yet
+		}
+		food, ok := FoodDb[currentFoodId]
+		if !ok {
+			log.Fatalf("Trying to reference unknown food object at %d\n", currentFoodId)
+		}
+		food.NutrientQtys = make([]NutrientQty, nc)
+		copy(food.NutrientQtys, nutrientQtys[0:nc])
+	}
+
+	for _, r := range rawCSV {
+		foodId := fieldToInt32(r[0])
+		if foodId != currentFoodId {
+			copyNutrients()
+			currentFoodId = foodId
+			nc = 0
+		}
+		nutrientQtys[nc].NutrientId = fieldToInt32(r[1])
+		nutrientQtys[nc].Quantity = fieldToFloat32(r[2])
+		nc++
+	}
+	copyNutrients()
 }
 
 func InitNutritionDatabase() {
 	loadFile("data/nutcsv/FOOD_DES.csv", FoodDb, loadFood)
 	loadFile("data/nutcsv/NUTR_DEF.csv", NutrientDb, loadNutrient)
+	loadNutrientData()
+	fmt.Printf("%+v\n", FoodDb[1001])
 }
