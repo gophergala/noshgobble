@@ -105,10 +105,11 @@ CSV::read('data/nuttxt/NUT_DATA.txt', encoding: 'windows-1251:utf-8', col_sep: '
   nqty = NutrientQty.new(l)
   nutrient_qtys << nqty if nqty.nonzero?
 end
-food_db[food_key_map[fid]].nutrient_qtys = nutrient_qtys
+food_db[food_key_map[fid]].nutrient_qtys =
+  nutrient_qtys.sort_by {|nq| nq.nutrient_id}
 
 # write nutdb.go
-File.open('src/nutdb.go', 'w') do |f|
+File.open('src/nutdb/nutdb.go', 'w') do |f|
   f.write(DATA.read)
   f.write("var FoodDb = []Food{\n\t#{food_db.join(",\n\t")},\n}")
   f.write("\n")
@@ -124,7 +125,7 @@ CSV.open('data/nutcsv/nutrient-quantities.csv', 'w') do |out|
   end
 end
 __END__
-package main
+package nutdb
 
 import (
 	"encoding/csv"
