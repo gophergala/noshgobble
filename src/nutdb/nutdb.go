@@ -1,4 +1,4 @@
-package main
+package nutdb
 
 import (
 	"encoding/csv"
